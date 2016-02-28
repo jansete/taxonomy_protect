@@ -1,0 +1,6 @@
+name: 'Taxonomy Protect'
+description: 'Prevents important taxonomy vocabularies from being deleted.'
+core: 8.x
+dependencies:
+  - taxonomy
+type: module

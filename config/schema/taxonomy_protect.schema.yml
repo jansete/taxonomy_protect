@@ -1,0 +1,6 @@
+taxonomy_protect.settings:
+  type: mapping
+  label: Opciones
+  mapping:
+    taxonomy_protect_vocabularies:
+      type: 'NULL'

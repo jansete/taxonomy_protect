@@ -1,62 +1,18 @@
 <?php
-/**
- * Implements hook_menu().
- */
-function taxonomy_protect_menu() {
-  $items['admin/structure/taxonomy/protect'] = array(
-    'title' => 'Taxonomy Protect',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('taxonomy_protect_admin_settings_form'),
-    'access arguments' => array('administer taxonomy_protect'),
-    'type' => MENU_NORMAL_ITEM,
-  );
-  return $items;
-}
 
-
-/**
- * Implements hook_permission().
- */
-function taxonomy_protect_permission() {
-  return array(
-    'administer taxonomy_protect' =>  array(
-      'title' => t('Administer taxonomy_protect settings'),
-      'description' => t('Select taxonomy vocabularies to protect'),
-    ),
-  );
-}
-
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Implements hook_form_FORM_ID_alter().
  */
-function taxonomy_protect_form_taxonomy_form_vocabulary_alter(&$form, &$form_state, $form_id) {
-  if (!$protected_vids = variable_get('taxonomy_protect_vocabularies', NULL)) {
+function taxonomy_protect_form_taxonomy_vocabulary_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if (!$protected_vids = \Drupal::config('taxonomy_protect.settings')->get('taxonomy_protect_vocabularies')) {
     return;
   }
-  if (empty($form['vid']['#value']) || empty($protected_vids[$form['vid']['#value']])) {
-    // not needed
+  // Not needed when is create form o not in protected vids
+  if (empty($form['vid']['#default_value']) || empty($protected_vids[$form['vid']['#default_value']])) {
     return;
   }
   drupal_set_message(t('This vocabulary cannot be deleted.'), 'warning');
   $form['actions']['delete']['#access'] = FALSE;
 }
-
-
-function taxonomy_protect_admin_settings_form() {
-  $vocabulary = taxonomy_get_vocabularies();
-  $list = array(); /* Change to array('0' => '--none--'); if you want a none option*/
-  foreach ($vocabulary as $item) {
-    $list[$item->vid] = $item->name;
-  }
-  $form['taxonomy_protect_vocabularies'] = array(
-    '#type' => 'checkboxes',
-    '#title' => t('Vocabularies to protect'),
-    '#position' => 'left' ,
-    '#options' => $list ,
-    '#default_value' => variable_get('taxonomy_protect_vocabularies', NULL),
-    '#description' => t('Users will be prevented from deleting selected vocabularies.'),
-  );
-  return system_settings_form($form);
-}
-
