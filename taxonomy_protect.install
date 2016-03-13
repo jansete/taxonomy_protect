@@ -10,11 +10,3 @@
 function taxonomy_protect_install() {
   \Drupal::configFactory()->getEditable('taxonomy_protect.settings')->set('taxonomy_protect_vocabularies', array())->save();
 }
-
-/**
- * Implements hook_uninstall().
- */
-function taxonomy_protect_uninstall() {
-  \Drupal::config('taxonomy_protect.settings')->clear('taxonomy_protect_vocabularies')->save();
-}
-
